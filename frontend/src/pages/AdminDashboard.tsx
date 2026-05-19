@@ -1,7 +1,9 @@
 // src/pages/AdminDashboard.tsx
 import { useState } from "react";
+import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import { Globe, Users, BarChart3, Plus, Pencil, Trash2, LogOut, Shield, X, Save } from "lucide-react";
+import { Globe, Users, BarChart3, Plus, Pencil, Trash2, LogOut, Shield, X, Save,
+  Map, Star } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useAuth } from "../context/AuthContext";
@@ -19,11 +21,11 @@ type Tab = "sites" | "users" | "stats";
 type SiteForm = { nom:string; ville:string; categorie:string; prix:string; horaires:string; description:string; dureeVisite:string; };
 const EMPTY_FORM: SiteForm = { nom:"", ville:"", categorie:"histoire", prix:"0", horaires:"", description:"", dureeVisite:"1" };
 
-function StatCard({ label, value, color, icon }: { label:string; value:string|number; color:string; icon:string }) {
+function StatCard({ label, value, color, icon }: { label:string; value:string|number; color:string; icon:ReactNode }) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 p-5 flex items-center gap-4">
-      <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${color}`}>{icon}</div>
-      <div><p className="text-[11px] font-bold uppercase text-gray-400">{label}</p><p className="text-[22px] font-extrabold text-gray-900">{value}</p></div>
+    <div className="bg-white rounded-2xl border border-gray-200 p-4 sm:p-5 flex items-center gap-3 sm:gap-4">
+      <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${color}`}>{icon}</div>
+      <div><p className="text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">{label}</p><p className="text-[18px] sm:text-[22px] font-extrabold text-gray-900">{value}</p></div>
     </div>
   );
 }
@@ -76,20 +78,20 @@ export default function AdminDashboard() {
           <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center"><Shield className="w-8 h-8" /></div>
           <div className="flex-1">
             <p className="text-[11px] font-semibold opacity-70 uppercase tracking-wider">Administration SmartTour</p>
-            <h1 className="text-[22px] font-extrabold">Tableau de bord Admin</h1>
+            <h1 className="text-[18px] sm:text-[22px] font-extrabold">Tableau de bord Admin</h1>
             <p className="text-[12px] opacity-70">{user.email}</p>
           </div>
-          <button onClick={() => { logout(); navigate("/"); }} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/20 hover:bg-white/30 text-[13px] font-semibold transition-colors">
-            <LogOut className="w-4 h-4" /> Déconnexion
+          <button onClick={() => { logout(); navigate("/"); }} className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-white/20 hover:bg-white/30 text-[12px] sm:text-[13px] font-semibold transition-colors">
+            <LogOut className="w-4 h-4" /> <span className="hidden sm:inline">Déconnexion</span>
           </button>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <StatCard label="Sites enregistrés" value={sites.length}            color="bg-green-50"  icon="🗺️" />
-          <StatCard label="Utilisateurs"       value={tourists.length}         color="bg-blue-50"   icon="👥" />
-          <StatCard label="Itinéraires générés" value="3 271"                 color="bg-purple-50" icon="📋" />
-          <StatCard label="Avis reçus"          value={totalAvis.toLocaleString("fr-FR")} color="bg-amber-50" icon="⭐" />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+          <StatCard label="Sites enregistrés"   value={sites.length}                       color="bg-green-50"  icon={<Map className="w-5 h-5 text-green-600" />} />
+          <StatCard label="Utilisateurs"         value={tourists.length}                    color="bg-blue-50"   icon={<Users className="w-5 h-5 text-blue-600" />} />
+          <StatCard label="Itinéraires générés"  value="3 271"                               color="bg-purple-50" icon={<BarChart3 className="w-5 h-5 text-purple-600" />} />
+          <StatCard label="Avis reçus"           value={totalAvis.toLocaleString("fr-FR")}  color="bg-amber-50"  icon={<Star className="w-5 h-5 text-amber-500" />} />
         </div>
 
         {/* Onglets */}

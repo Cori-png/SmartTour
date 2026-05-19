@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   MapPin, Clock, Wallet, Trash2, Route, ArrowLeft,
-  Star, Car, Tent,
+  Star, Car, Tent, UtensilsCrossed,
 } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -124,7 +124,7 @@ export default function PlanifierPage() {
               Sélectionnez des sites sur la page Explorer puis cliquez sur "Ajouter à l'itinéraire".
             </p>
           </div>
-          <button onClick={() => navigate("/explorer")} className="flex items-center gap-2 px-8 py-3 rounded-xl bg-green-700 text-white font-bold hover:bg-green-800 transition-colors">
+          <button onClick={() => navigate("/explorer")} className="flex items-center gap-2 px-8 py-3 mb-5 rounded-xl bg-green-700 text-white font-bold hover:bg-green-800 transition-colors">
             <MapPin className="w-4 h-4" /> Explorer les sites
           </button>
         </div>
@@ -254,8 +254,8 @@ export default function PlanifierPage() {
 
             {/* Restauration */}
             <div>
-              <label className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide text-gray-400 mb-2">
-                🍽️ Restauration / jour
+              <label className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-gray-400 mb-2">
+                <UtensilsCrossed className="w-3 h-3 text-green-600" /> Restauration / jour
               </label>
               <div className="flex items-center gap-3">
                 <input type="range" min={0} max={30000} step={1000} value={restauration}
@@ -295,11 +295,9 @@ export default function PlanifierPage() {
         </div>
 
         {/* ══ COLONNE DROITE : Carte aperçu ══ */}
-        <div className="flex-1 min-h-[440px]">
-          <div className="sticky top-20" style={{ height: "calc(100vh - 140px)" }}>
-            <div className="w-full h-full rounded-2xl overflow-hidden border border-gray-200">
-              <ItineraryMapView sites={itinerarySites} launched={false} />
-            </div>
+        <div className="flex-1">
+          <div className="sticky top-20 rounded-2xl overflow-hidden border border-gray-200" style={{ height: "520px" }}>
+            <ItineraryMapView sites={itinerarySites} launched={false} visible={true} />
           </div>
         </div>
       </div>

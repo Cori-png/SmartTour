@@ -2,7 +2,8 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
 
 export type UserRole = "tourist" | "admin";
-export type User = { id: string; nom: string; email: string; role: UserRole; createdAt: string; };
+export type User = { id: string; nom: string; email: string; role: UserRole; createdAt: string; passwordHash?: string; };
+
 
 const ADMIN_EMAIL  = (import.meta.env.VITE_ADMIN_EMAIL as string ?? "admin@smarttour.bj").toLowerCase().trim();
 const USER_KEY     = "smarttour-user";
@@ -58,10 +59,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await new Promise(r => setTimeout(r, 700));
     if (email && password.length >= 6) {
       const role: UserRole = email.trim().toLowerCase() === ADMIN_EMAIL ? "admin" : "tourist";
-      const nom = email.split("@")[0];
       const existing = allUsers.find(u => u.email === email);
-      const u: User = existing ?? { id:"u_"+Date.now(), nom, email, role, createdAt: new Date().toLocaleDateString("fr-FR") };
-      persistUser({ ...u, role });
+      // Si l'utilisateur existe, vérifier son mot de passe
+      if (existing) {
+        if (existing.passwordHash && existing.passwordHash !== btoa(password)) {
+          setLoading(false);
+          return { success: false, error: "Email ou mot de passe incorrect." };
+        }
+        persistUser({ ...existing, role });
+        setLoading(false);
+        return { success: true };
+      }
+      // Sinon créer un compte temporaire (connexion sans inscription préalable)
+      const nom = email.split("@")[0];
+      const u: User = { id:"u_"+Date.now(), nom, email, role, createdAt: new Date().toLocaleDateString("fr-FR"), passwordHash: btoa(password) };
+      persistUser(u);
       setLoading(false);
       return { success: true };
     }
@@ -73,7 +85,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     await new Promise(r => setTimeout(r, 700));
     if (nom && email && password.length >= 6) {
-      const u: User = { id:"u_"+Date.now(), nom, email, role:"tourist", createdAt: new Date().toLocaleDateString("fr-FR") };
+      // Vérifier si l'email est déjà utilisé
+      if (allUsers.find(u => u.email === email)) {
+        setLoading(false);
+        return { success: false, error: "Cet email est déjà utilisé." };
+      }
+      const role: UserRole = email.trim().toLowerCase() === ADMIN_EMAIL ? "admin" : "tourist";
+      const u: User = { id:"u_"+Date.now(), nom, email, role, createdAt: new Date().toLocaleDateString("fr-FR"), passwordHash: btoa(password) };
       persistUser(u);
       setLoading(false);
       return { success: true };

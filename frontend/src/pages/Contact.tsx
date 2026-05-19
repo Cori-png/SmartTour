@@ -32,18 +32,27 @@ const Contact = () => {
   return (
     <div className="bg-gray-50 min-h-screen">
       <Navbar />
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-emerald-800 to-teal-900 text-white py-16">
-        <div className="max-w-6xl mx-auto px-6 text-center">
-          <h1 className="text-5xl font-bold mb-4">Contactez SmartTour Bénin</h1>
-          <p className="text-xl text-emerald-100 max-w-2xl mx-auto">
+      {/* Hero Section — background image amazone */}
+      <div className="relative text-white py-10 sm:py-14 md:py-16 overflow-hidden">
+        {/* Image background */}
+        <img
+          src="/images/amazone.jpg"
+          alt="Place de l'Amazone"
+          className="absolute inset-0 w-full h-full object-cover object-center"
+        />
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-black/60" />
+        {/* Contenu */}
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 text-center">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">Contactez SmartTour Bénin</h1>
+          <p className="text-base sm:text-xl text-white/85 max-w-2xl mx-auto">
             Nous sommes là pour vous aider à préparer le voyage de vos rêves au Bénin
           </p>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 py-16">
-        <div className="grid lg:grid-cols-2 gap-12">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
           {/* Formulaire */}
           <div className="bg-white rounded-3xl shadow-xl p-10">
             <h2 className="text-3xl font-semibold mb-8 text-gray-900">Envoyez-nous un message</h2>

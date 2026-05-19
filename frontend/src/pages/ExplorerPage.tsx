@@ -1,6 +1,6 @@
 // src/pages/ExplorerPage.tsx
 import { useState, useEffect, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import FilterPanel, { type Filters } from "../components/FilterPanel";
@@ -11,7 +11,7 @@ import AuthGuardModal from "../components/AuthGuardModal";
 import { useNearbyServices } from "../hooks/useNearbyServices";
 import { useItinerary } from "../context/ItineraryContext";
 import { useAuth } from "../context/AuthContext";
-import { SlidersHorizontal, X, Route } from "lucide-react";
+import { SlidersHorizontal, X, Route, Search } from "lucide-react";
 
 // ── Données mock (à remplacer par useQuery(api.queries.getSites.getSites, filters)) ──
 const MOCK_SITES: Site[] = [
@@ -44,7 +44,9 @@ const MOCK_SITES: Site[] = [
     coordonnees: { lat: 6.4667, lng: 2.4167 },
     prix: 5000,
     horaires: "07h00 - 17h00",
-    images: [],
+    images: [
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Ganvie_stilt_village.jpg/640px-Ganvie_stilt_village.jpg",
+    ],
     noteMoyenne: 4.7,
     nombreAvis: 489,
     dureeVisite: 3,
@@ -61,7 +63,7 @@ const MOCK_SITES: Site[] = [
     coordonnees: { lat: 7.1833, lng: 1.9833 },
     prix: 2000,
     horaires: "09h00 - 17h00",
-    images: [],
+    images: ["/images/PRA.png"],
     noteMoyenne: 4.9,
     nombreAvis: 276,
     dureeVisite: 2.5,
@@ -78,7 +80,7 @@ const MOCK_SITES: Site[] = [
     coordonnees: { lat: 11.1667, lng: 1.5167 },
     prix: 10000,
     horaires: "06h00 - 18h00",
-    images: [],
+    images: ["/images/Pendjari.png", "/images/PNR.png"],
     noteMoyenne: 4.9,
     nombreAvis: 198,
     dureeVisite: 8,
@@ -95,7 +97,9 @@ const MOCK_SITES: Site[] = [
     coordonnees: { lat: 6.2833, lng: 1.8167 },
     prix: 0,
     horaires: "Toute la journée",
-    images: [],
+    images: [
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Grand-Popo%2C_Benin.jpg/640px-Grand-Popo%2C_Benin.jpg",
+    ],
     noteMoyenne: 4.6,
     nombreAvis: 221,
     dureeVisite: 4,
@@ -112,7 +116,7 @@ const MOCK_SITES: Site[] = [
     coordonnees: { lat: 6.3603, lng: 2.0852 },
     prix: 1500,
     horaires: "08h00 - 18h00",
-    images: [],
+    images: ["/images/Tpy.jpg"],
     noteMoyenne: 4.5,
     nombreAvis: 302,
     dureeVisite: 1,
@@ -129,7 +133,9 @@ const MOCK_SITES: Site[] = [
     coordonnees: { lat: 6.362, lng: 2.084 },
     prix: 1000,
     horaires: "08h00 - 18h00",
-    images: [],
+    images: [
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Ouidah_sacred_forest.jpg/640px-Ouidah_sacred_forest.jpg",
+    ],
     noteMoyenne: 4.4,
     nombreAvis: 178,
     dureeVisite: 1.5,
@@ -146,7 +152,7 @@ const MOCK_SITES: Site[] = [
     coordonnees: { lat: 6.3612, lng: 2.4278 },
     prix: 0,
     horaires: "06h00 - 20h00",
-    images: [],
+    images: ["/images/Mk.jpg"],
     noteMoyenne: 4.2,
     nombreAvis: 534,
     dureeVisite: 2,
@@ -163,7 +169,7 @@ const MOCK_SITES: Site[] = [
     coordonnees: { lat: 10.3167, lng: 1.3833 },
     prix: 500,
     horaires: "07h00 - 17h00",
-    images: [],
+    images: ["/images/cascade.png"],
     noteMoyenne: 4.6,
     nombreAvis: 64,
     dureeVisite: 4,
@@ -180,7 +186,9 @@ const MOCK_SITES: Site[] = [
     coordonnees: { lat: 6.3614, lng: 2.0843 },
     prix: 0,
     horaires: "07h00 - 19h00",
-    images: [],
+    images: [
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Cath%C3%A9drale_de_Ouidah.jpg/640px-Cath%C3%A9drale_de_Ouidah.jpg",
+    ],
     noteMoyenne: 4.3,
     nombreAvis: 87,
     dureeVisite: 1,
@@ -197,7 +205,7 @@ const MOCK_SITES: Site[] = [
     coordonnees: { lat: 6.3654, lng: 2.4183 },
     prix: 0,
     horaires: "Toute la journée",
-    images: [],
+    images: ["/images/amazone.jpg"],
     noteMoyenne: 4.1,
     nombreAvis: 143,
     dureeVisite: 0.5,
@@ -214,7 +222,7 @@ const MOCK_SITES: Site[] = [
     coordonnees: { lat: 7.185, lng: 1.985 },
     prix: 3000,
     horaires: "09h00 - 17h00",
-    images: [],
+    images: ["/images/PRA.png"],
     noteMoyenne: 4.7,
     nombreAvis: 156,
     dureeVisite: 2,
@@ -245,9 +253,31 @@ export default function ExplorerPage() {
   // ── Sélection pour l'itinéraire ────────────────────────────────
   const [checkedSiteIds, setCheckedSiteIds] = useState<Set<string>>(new Set());
 
-  const navigate = useNavigate();
+  const navigate  = useNavigate();
+  const location   = useLocation();
   const { addSites, itinerarySites } = useItinerary();
   const { user } = useAuth();
+
+  // ── Lire les paramètres URL (depuis la barre de recherche de l'accueil) ──
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const q         = params.get("q")         ?? "";
+    const ville     = params.get("ville")     ?? "";
+    const dureeRaw  = params.get("dureeMax")  ?? "";
+    const budgetRaw = params.get("budgetMax") ?? "";
+    const dureeMax:  number | "" = dureeRaw  !== "" && !isNaN(Number(dureeRaw))  ? Number(dureeRaw)  : "";
+    const budgetMax: number | "" = budgetRaw !== "" && !isNaN(Number(budgetRaw)) ? Number(budgetRaw) : "";
+    if (q || ville || dureeMax !== "" || budgetMax !== "") {
+      setFilters(prev => ({
+        ...prev,
+        recherche: q,
+        ville:     ville ? ville.charAt(0).toUpperCase() + ville.slice(1) : "toutes",
+        dureeMax,
+        budgetMax,
+      }));
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.search]);
 
   // IDs déjà dans l'itinéraire (pour griser)
   const itinerarySiteIds = useMemo(
@@ -390,7 +420,7 @@ export default function ExplorerPage() {
           {/* Grille */}
           {filteredSites.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 text-center">
-              <span className="text-5xl mb-5">🔍</span>
+              <Search className="w-14 h-14 text-gray-300 mb-5" />
               <p className="text-[15px] font-bold text-gray-800 mb-2">
                 Aucun site trouvé
               </p>
@@ -509,8 +539,13 @@ export default function ExplorerPage() {
           site={selectedSite}
           onClose={() => setSelectedSite(null)}
           onAddToItinerary={(site) => {
-            console.log("Ajout à l'itinéraire :", site.nom);
+            if (!user) {
+              setShowAuthGuard(true);
+              return;
+            }
+            addSites([site]);
             setSelectedSite(null);
+            navigate("/planifier");
           }}
         />
       )}

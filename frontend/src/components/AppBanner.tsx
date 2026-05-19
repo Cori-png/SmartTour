@@ -1,21 +1,21 @@
 export default function AppBanner() {
   return (
-    <div className="mx-12 mb-14 bg-green-700 rounded-2xl flex items-center justify-between px-9 py-7 gap-5 relative overflow-hidden">
+    <div className="mx-4 sm:mx-8 md:mx-12 mb-10 md:mb-14 bg-green-700 rounded-2xl flex flex-col sm:flex-row items-center justify-between px-6 sm:px-9 py-6 sm:py-7 gap-5 relative overflow-hidden">
 
       {/* Cercles décoratifs */}
       <div className="absolute right-[-60px] top-[-60px] w-[220px] h-[220px] rounded-full bg-white/[0.06]" aria-hidden="true" />
       <div className="absolute right-[60px] bottom-[-80px] w-[180px] h-[180px] rounded-full bg-white/[0.04]" aria-hidden="true" />
 
       {/* Texte */}
-      <div className="relative z-10">
-        <p className="text-lg font-extrabold text-white mb-1">
+      <div className="relative z-10 text-center sm:text-left">
+        <p className="text-base sm:text-lg font-extrabold text-white mb-1">
           Emportez votre voyage partout avec vous !
         </p>
         <p className="text-[13px] text-white/75">Téléchargez notre application mobile</p>
       </div>
 
       {/* Boutons stores */}
-      <div className="flex gap-3 relative z-10">
+      <div className="flex gap-3 relative z-10 flex-shrink-0">
 
         <a
           href="#"

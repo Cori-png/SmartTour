@@ -32,20 +32,20 @@ const FEATURES: Feature[] = [
 
 export default function FeaturesStrip() {
   return (
-    <div className="grid grid-cols-4 bg-gray-50 border-t border-b border-gray-200">
+    <div className="grid grid-cols-2 md:grid-cols-4 bg-gray-50 border-t border-b border-gray-200">
       {FEATURES.map((f, i) => (
         <div
           key={f.title}
-          className={`flex items-start gap-3.5 px-6 py-7 ${
-            i < FEATURES.length - 1 ? "border-r border-gray-200" : ""
-          }`}
+          className={`flex items-start gap-3 sm:gap-3.5 px-4 sm:px-6 py-5 sm:py-7 ${
+            i < FEATURES.length - 1 ? "border-b md:border-b-0 border-r-0 md:border-r border-gray-200" : ""
+          } ${i === 1 ? "border-r border-gray-200 md:border-r" : ""}`}
         >
-          <div className="flex-shrink-0 w-11 h-11 rounded-[10px] bg-green-50 flex items-center justify-center">
+          <div className="flex-shrink-0 w-9 h-9 sm:w-11 sm:h-11 rounded-[10px] bg-green-50 flex items-center justify-center">
             {f.icon}
           </div>
           <div>
-            <p className="text-[13.5px] font-bold text-gray-900 mb-1">{f.title}</p>
-            <p className="text-[12px] text-gray-500 leading-[1.45]">{f.desc}</p>
+            <p className="text-[12.5px] sm:text-[13.5px] font-bold text-gray-900 mb-0.5 sm:mb-1">{f.title}</p>
+            <p className="text-[11px] sm:text-[12px] text-gray-500 leading-[1.45]">{f.desc}</p>
           </div>
         </div>
       ))}

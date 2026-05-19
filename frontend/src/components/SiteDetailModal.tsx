@@ -1,6 +1,7 @@
 // src/components/SiteDetailModal.tsx
 // Modal de détail d'un site touristique — s'ouvre à la place d'une navigation
-import { useEffect, useState, Fragment } from "react";
+import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import {
   X, MapPin, Clock, Wallet, Star, Tag,
   Activity, Shield, Utensils, BedDouble, Wine, Pill,
@@ -21,7 +22,8 @@ const CAT_COLORS: Record<string, { bg: string; text: string }> = {
 };
 
 // ── Config icônes services ───────────────────────────────────
-const SVC_CFG: Record<ServiceType, { icon: React.ReactNode; bg: string; color: string; label: string }> = {
+const SVC_CFG: Record<ServiceType, { icon: ReactNode; bg: string; color: string; label: string }> = {
+
   hospital:   { icon: <Activity className="w-3.5 h-3.5" />, bg: "bg-red-100",     color: "text-red-600",     label: "Hôpital"      },
   police:     { icon: <Shield   className="w-3.5 h-3.5" />, bg: "bg-blue-100",    color: "text-blue-600",    label: "Police"       },
   restaurant: { icon: <Utensils className="w-3.5 h-3.5" />, bg: "bg-orange-100",  color: "text-orange-600",  label: "Restaurant"   },

@@ -1,5 +1,7 @@
 // src/components/NearbyServicesBar.tsx
 import { useRef, useState, useEffect, Fragment } from "react";
+import type { ReactNode } from "react";
+
 import {
   Activity, Shield, Utensils, BedDouble, Wine, Pill, Plus,
 } from "lucide-react";
@@ -9,7 +11,8 @@ import type { ServiceType, NearbyService } from "../hooks/useNearbyServices";
 // ── Config visuelle par type ─────────────────────────────────
 const SERVICE_STYLE: Record<
   ServiceType,
-  { icon: React.ReactNode; iconBg: string; textColor: string; label: string }
+  { icon: ReactNode; iconBg: string; textColor: string; label: string }
+
 > = {
   hospital: {
     icon: <Activity className="w-3 h-3" />,

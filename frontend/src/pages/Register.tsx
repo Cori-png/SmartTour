@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { User, Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
+import { User, Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle2, Loader2, ArrowLeft, Home } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import type { AuthResult } from "../context/AuthContext";
-import Logo from "/images/Logo_ST.png";
+
+const Logo = "/images/Logo_ST.png";
 
  
 type FormState = {
@@ -35,6 +36,9 @@ export default function RegisterPage() {
   const [pwdFocus, setPwdFocus] = useState(false);
   const [error, setError] = useState("");
 
+  // Force les champs vides à chaque montage (empêche l'autocomplétion du navigateur)
+  useEffect(() => { setForm({ nom: "", email: "", password: "", confirm: "" }); }, []);
+
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     setError("");
@@ -62,7 +66,7 @@ export default function RegisterPage() {
       email: form.email,
       password: form.password,
     });
-    if ("error" in result) {
+    if (!result.success) {
       setError(result.error);
       return;
     }
@@ -107,6 +111,16 @@ export default function RegisterPage() {
       {/* ── Formulaire ── */}
       <div className="flex-1 flex flex-col justify-center items-center px-8 py-12 bg-white overflow-y-auto">
 
+        {/* Navigation haut */}
+        <div className="w-full max-w-[420px] flex items-center justify-between mb-6">
+          <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors">
+            <ArrowLeft className="w-4 h-4" /> Retour
+          </button>
+          <Link to="/" className="flex items-center gap-1.5 text-sm text-green-700 font-semibold hover:underline">
+            <Home className="w-4 h-4" /> Accueil
+          </Link>
+        </div>
+
         <Link to="/" className="flex items-center gap-2 mb-8">
             <img src={Logo} alt="SmartTour Logo" className="w-32 h-18 rounded-full"/>   
         </Link>
@@ -122,7 +136,7 @@ export default function RegisterPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate autoComplete="off">
 
             {/* Nom */}
             <div>
@@ -137,7 +151,7 @@ export default function RegisterPage() {
                   value={form.nom}
                   onChange={handleChange}
                   placeholder="Jean Dupont"
-                  autoComplete="name"
+                  autoComplete="off"
                   className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                 />
               </div>
@@ -156,7 +170,7 @@ export default function RegisterPage() {
                   value={form.email}
                   onChange={handleChange}
                   placeholder="votre@email.com"
-                  autoComplete="email"
+                  autoComplete="off"
                   className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                 />
               </div>
@@ -252,9 +266,10 @@ export default function RegisterPage() {
 
           <p className="text-center text-sm text-gray-500 mt-6">
             Déjà un compte ?{" "}
-            <Link to="/login" className="text-green-700 font-bold hover:underline">
-              Se connecter
-            </Link>
+            <Link to="/login" className="text-green-700 font-bold hover:underline">Se connecter</Link>
+          </p>
+          <p className="text-center text-sm text-gray-400 mt-3">
+            <Link to="/" className="hover:text-green-700 hover:underline transition-colors">← Retour à l'accueil</Link>
           </p>
         </div>
       </div>

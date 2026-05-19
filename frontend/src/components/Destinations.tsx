@@ -24,9 +24,7 @@ const MOCK_POPULAR: Site[] = [
     ville: "Abomey",
     noteMoyenne: 4.9,
     categorie: "histoire",
-    images: [
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Abomey_palace.jpg/640px-Abomey_palace.jpg",
-    ],
+    images: ["/images/PRA.png"],
   },
   {
     _id: "mock-2",
@@ -38,15 +36,14 @@ const MOCK_POPULAR: Site[] = [
       "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Ganvie_stilt_village.jpg/640px-Ganvie_stilt_village.jpg",
     ],
   },
+
   {
     _id: "mock-3",
     nom: "Parc National de la Pendjari",
     ville: "Tanguiéta",
     noteMoyenne: 4.9,
     categorie: "nature",
-    images: [
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Pendjari_NP.jpg/640px-Pendjari_NP.jpg",
-    ],
+    images: ["/images/Pendjari.png"],
   },
   {
     _id: "mock-4",
@@ -64,7 +61,9 @@ const MOCK_POPULAR: Site[] = [
     ville: "Grand-Popo",
     noteMoyenne: 4.6,
     categorie: "plage",
-    images: [],
+    images: [
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Grand-Popo%2C_Benin.jpg/640px-Grand-Popo%2C_Benin.jpg",
+    ],
   },
   {
     _id: "mock-6",
@@ -72,7 +71,7 @@ const MOCK_POPULAR: Site[] = [
     ville: "Ouidah",
     noteMoyenne: 4.5,
     categorie: "religion",
-    images: [],
+    images: ["/images/Tpy.jpg"],
   },
   {
     _id: "mock-7",
@@ -80,9 +79,7 @@ const MOCK_POPULAR: Site[] = [
     ville: "Natitingou",
     noteMoyenne: 4.6,
     categorie: "nature",
-    images: [
-      "https://res.cloudinary.com/dogqgmrmb/image/upload/v1776251319/cascade_ahdn2r.png",
-    ],
+    images: ["/images/cascade.png"],
   },
   {
     _id: "mock-8",
@@ -90,7 +87,7 @@ const MOCK_POPULAR: Site[] = [
     ville: "Cotonou",
     noteMoyenne: 4.2,
     categorie: "culture",
-    images: [],
+    images: ["/images/Mk.jpg"],
   },
 ];
 
