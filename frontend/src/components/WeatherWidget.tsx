@@ -1,6 +1,6 @@
 // src/components/WeatherWidget.tsx
 // Affiche la météo 7 jours pour un site (Open-Meteo, gratuit)
-import { CloudOff, Droplets, Thermometer } from "lucide-react";
+import { CloudOff, Droplets } from "lucide-react";
 import { useWeather } from "../hooks/useWeather";
 
 const JOURS_FR = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];

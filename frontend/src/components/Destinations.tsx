@@ -5,6 +5,8 @@
 import { useState } from "react";
 import { Star, Heart, MapPin, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 
 // ── Types ────────────────────────────────────────────────────
 type Site = {
@@ -16,80 +18,8 @@ type Site = {
   categorie: string;
 };
 
-// ── Données mock ─────────────────────────────────────────────
-const MOCK_POPULAR: Site[] = [
-  {
-    _id: "mock-1",
-    nom: "Palais Royal d'Abomey",
-    ville: "Abomey",
-    noteMoyenne: 4.9,
-    categorie: "histoire",
-    images: ["/images/PRA.png"],
-  },
-  {
-    _id: "mock-2",
-    nom: "Village lacustre de Ganvié",
-    ville: "Cotonou",
-    noteMoyenne: 4.7,
-    categorie: "culture",
-    images: [
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Ganvie_stilt_village.jpg/640px-Ganvie_stilt_village.jpg",
-    ],
-  },
+// Les données MOCK_POPULAR ont été remplacées par une requête dynamique vers Convex.
 
-  {
-    _id: "mock-3",
-    nom: "Parc National de la Pendjari",
-    ville: "Tanguiéta",
-    noteMoyenne: 4.9,
-    categorie: "nature",
-    images: ["/images/Pendjari.png"],
-  },
-  {
-    _id: "mock-4",
-    nom: "Route de l'Esclave – Ouidah",
-    ville: "Ouidah",
-    noteMoyenne: 4.8,
-    categorie: "histoire",
-    images: [
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Ouidah_-_Gate_of_No_Return.jpg/640px-Ouidah_-_Gate_of_No_Return.jpg",
-    ],
-  },
-  {
-    _id: "mock-5",
-    nom: "Plage de Grand-Popo",
-    ville: "Grand-Popo",
-    noteMoyenne: 4.6,
-    categorie: "plage",
-    images: [
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Grand-Popo%2C_Benin.jpg/640px-Grand-Popo%2C_Benin.jpg",
-    ],
-  },
-  {
-    _id: "mock-6",
-    nom: "Temple des Pythons",
-    ville: "Ouidah",
-    noteMoyenne: 4.5,
-    categorie: "religion",
-    images: ["/images/Tpy.jpg"],
-  },
-  {
-    _id: "mock-7",
-    nom: "Cascade de Kota",
-    ville: "Natitingou",
-    noteMoyenne: 4.6,
-    categorie: "nature",
-    images: ["/images/cascade.png"],
-  },
-  {
-    _id: "mock-8",
-    nom: "Marché Dantokpa",
-    ville: "Cotonou",
-    noteMoyenne: 4.2,
-    categorie: "culture",
-    images: ["/images/Mk.jpg"],
-  },
-];
 
 // ── Couleurs et emojis par catégorie ────────────────────────
 const CAT_COLORS: Record<string, string> = {
@@ -170,6 +100,9 @@ function DestCard({ site }: { site: Site }) {
 
 // ── Composant principal ──────────────────────────────────────
 export default function Destinations() {
+  const popularQuery = useQuery(api.sites.getPopular);
+  const sites = popularQuery ?? [];
+
   return (
     <section className="px-6 md:px-12 pt-8 pb-12 bg-white">
       {/* En-tête */}
@@ -191,7 +124,7 @@ export default function Destinations() {
 
       {/* Scroll horizontal */}
       <div className="flex gap-5 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory -mx-6 md:-mx-12 px-6 md:px-12">
-        {MOCK_POPULAR.map((site) => (
+        {sites.map((site) => (
           <Link key={site._id} to="/explorer">
             <DestCard site={site} />
           </Link>

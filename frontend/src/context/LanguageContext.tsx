@@ -172,11 +172,6 @@ const dict = {
   },
 } as const;
 
-type DeepValue<T> = T extends string
-  ? T
-  : T extends Record<string, unknown>
-  ? DeepValue<T[keyof T]>
-  : never;
 
 // ── Accès par clé pointée "nav.home" ────────────────────────
 function resolve(obj: unknown, path: string): string {

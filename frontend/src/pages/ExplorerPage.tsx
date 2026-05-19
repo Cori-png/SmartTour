@@ -1,6 +1,8 @@
 // src/pages/ExplorerPage.tsx
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import FilterPanel, { type Filters } from "../components/FilterPanel";
@@ -13,223 +15,8 @@ import { useItinerary } from "../context/ItineraryContext";
 import { useAuth } from "../context/AuthContext";
 import { SlidersHorizontal, X, Route, Search } from "lucide-react";
 
-// ── Données mock (à remplacer par useQuery(api.queries.getSites.getSites, filters)) ──
-const MOCK_SITES: Site[] = [
-  {
-    _id: "1",
-    nom: "Route de l'Esclave - Ouidah",
-    description:
-      "Chemin historique de 4 km que parcouraient les esclaves avant d'embarquer pour les Amériques. Un lieu de mémoire incontournable avec la Porte du Non-Retour.",
-    categorie: "histoire",
-    ville: "Ouidah",
-    coordonnees: { lat: 6.3536, lng: 2.0887 },
-    prix: 1000,
-    horaires: "08h00 - 18h00",
-    images: [
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Ouidah_-_Gate_of_No_Return.jpg/640px-Ouidah_-_Gate_of_No_Return.jpg",
-    ],
-    noteMoyenne: 4.8,
-    nombreAvis: 312,
-    dureeVisite: 2,
-    tags: ["patrimoine", "UNESCO", "histoire"],
-    score: 98,
-  },
-  {
-    _id: "2",
-    nom: "Village lacustre de Ganvié",
-    description:
-      "Surnommée la 'Venise de l'Afrique', Ganvié est un village entier construit sur le lac Nokoué. Ses habitants vivent sur pilotis depuis le XVIIe siècle.",
-    categorie: "culture",
-    ville: "Cotonou",
-    coordonnees: { lat: 6.4667, lng: 2.4167 },
-    prix: 5000,
-    horaires: "07h00 - 17h00",
-    images: [
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Ganvie_stilt_village.jpg/640px-Ganvie_stilt_village.jpg",
-    ],
-    noteMoyenne: 4.7,
-    nombreAvis: 489,
-    dureeVisite: 3,
-    tags: ["pirogue", "lac", "unique"],
-    score: 97,
-  },
-  {
-    _id: "3",
-    nom: "Palais Royal d'Abomey",
-    description:
-      "Site classé au patrimoine mondial de l'UNESCO. Les palais retracent l'histoire du puissant Royaume du Dahomey à travers sculptures et bas-reliefs.",
-    categorie: "histoire",
-    ville: "Abomey",
-    coordonnees: { lat: 7.1833, lng: 1.9833 },
-    prix: 2000,
-    horaires: "09h00 - 17h00",
-    images: ["/images/PRA.png"],
-    noteMoyenne: 4.9,
-    nombreAvis: 276,
-    dureeVisite: 2.5,
-    tags: ["UNESCO", "royauté", "musée"],
-    score: 99,
-  },
-  {
-    _id: "4",
-    nom: "Parc National de la Pendjari",
-    description:
-      "L'un des derniers grands écosystèmes de savane d'Afrique de l'Ouest. Lions, éléphants, buffles et guépards dans leur habitat naturel.",
-    categorie: "nature",
-    ville: "Tanguiéta",
-    coordonnees: { lat: 11.1667, lng: 1.5167 },
-    prix: 10000,
-    horaires: "06h00 - 18h00",
-    images: ["/images/Pendjari.png", "/images/PNR.png"],
-    noteMoyenne: 4.9,
-    nombreAvis: 198,
-    dureeVisite: 8,
-    tags: ["safari", "lions", "faune"],
-    score: 99,
-  },
-  {
-    _id: "5",
-    nom: "Plage de Grand-Popo",
-    description:
-      "Une des plus belles plages du Bénin. Cocotiers, sable fin et couchers de soleil spectaculaires à la frontière du Togo.",
-    categorie: "plage",
-    ville: "Grand-Popo",
-    coordonnees: { lat: 6.2833, lng: 1.8167 },
-    prix: 0,
-    horaires: "Toute la journée",
-    images: [
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Grand-Popo%2C_Benin.jpg/640px-Grand-Popo%2C_Benin.jpg",
-    ],
-    noteMoyenne: 4.6,
-    nombreAvis: 221,
-    dureeVisite: 4,
-    tags: ["plage", "détente", "coucher de soleil"],
-    score: 95,
-  },
-  {
-    _id: "6",
-    nom: "Temple des Pythons - Ouidah",
-    description:
-      "Temple sacré dédié au culte vaudou du python. Des dizaines de pythons royaux vivent ici en liberté. Une expérience fascinante et unique.",
-    categorie: "religion",
-    ville: "Ouidah",
-    coordonnees: { lat: 6.3603, lng: 2.0852 },
-    prix: 1500,
-    horaires: "08h00 - 18h00",
-    images: ["/images/Tpy.jpg"],
-    noteMoyenne: 4.5,
-    nombreAvis: 302,
-    dureeVisite: 1,
-    tags: ["vaudou", "python", "spiritualité"],
-    score: 94,
-  },
-  {
-    _id: "7",
-    nom: "Forêt Sacrée de Kpassè",
-    description:
-      "Forêt vaudou millénaire au cœur d'Ouidah. Statues, autels et arbres centenaires dans une atmosphère mystique hors du temps.",
-    categorie: "religion",
-    ville: "Ouidah",
-    coordonnees: { lat: 6.362, lng: 2.084 },
-    prix: 1000,
-    horaires: "08h00 - 18h00",
-    images: [
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Ouidah_sacred_forest.jpg/640px-Ouidah_sacred_forest.jpg",
-    ],
-    noteMoyenne: 4.4,
-    nombreAvis: 178,
-    dureeVisite: 1.5,
-    tags: ["vaudou", "forêt", "mystique"],
-    score: 92,
-  },
-  {
-    _id: "8",
-    nom: "Marché Dantokpa",
-    description:
-      "Le plus grand marché en plein air d'Afrique de l'Ouest. Tissus wax, épices, artisanat et fétiches : l'âme vivante de Cotonou.",
-    categorie: "culture",
-    ville: "Cotonou",
-    coordonnees: { lat: 6.3612, lng: 2.4278 },
-    prix: 0,
-    horaires: "06h00 - 20h00",
-    images: ["/images/Mk.jpg"],
-    noteMoyenne: 4.2,
-    nombreAvis: 534,
-    dureeVisite: 2,
-    tags: ["marché", "artisanat", "couleurs"],
-    score: 91,
-  },
-  {
-    _id: "9",
-    nom: "Cascade de Kota",
-    description:
-      "Magnifique cascade cachée dans les collines de l'Atacora. Un trekking de 2h à travers la forêt mène à ce joyau naturel peu fréquenté.",
-    categorie: "nature",
-    ville: "Natitingou",
-    coordonnees: { lat: 10.3167, lng: 1.3833 },
-    prix: 500,
-    horaires: "07h00 - 17h00",
-    images: ["/images/cascade.png"],
-    noteMoyenne: 4.6,
-    nombreAvis: 64,
-    dureeVisite: 4,
-    tags: ["cascade", "trekking", "randonnée"],
-    score: 93,
-  },
-  {
-    _id: "10",
-    nom: "Cathédrale de Ouidah",
-    description:
-      "La plus ancienne cathédrale du Bénin, construite par des missionnaires portugais au XVIIIe siècle. Un chef-d'œuvre d'architecture coloniale.",
-    categorie: "religion",
-    ville: "Ouidah",
-    coordonnees: { lat: 6.3614, lng: 2.0843 },
-    prix: 0,
-    horaires: "07h00 - 19h00",
-    images: [
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Cath%C3%A9drale_de_Ouidah.jpg/640px-Cath%C3%A9drale_de_Ouidah.jpg",
-    ],
-    noteMoyenne: 4.3,
-    nombreAvis: 87,
-    dureeVisite: 1,
-    tags: ["religion", "architecture", "gratuit"],
-    score: 89,
-  },
-  {
-    _id: "11",
-    nom: "Place de l'Amazone",
-    description:
-      "Grande place centrale de Cotonou dominée par la célèbre statue de l'Amazone du Dahomey. Symbole de la résistance féminine du Royaume du Danxomè.",
-    categorie: "culture",
-    ville: "Cotonou",
-    coordonnees: { lat: 6.3654, lng: 2.4183 },
-    prix: 0,
-    horaires: "Toute la journée",
-    images: ["/images/amazone.jpg"],
-    noteMoyenne: 4.1,
-    nombreAvis: 143,
-    dureeVisite: 0.5,
-    tags: ["statue", "amazone", "gratuit"],
-    score: 87,
-  },
-  {
-    _id: "12",
-    nom: "Musée d'Abomey",
-    description:
-      "Situé dans les anciens palais royaux. Trônes, statues, tissus royaux et objets rituels du Royaume du Dahomey. Guide obligatoire recommandé.",
-    categorie: "culture",
-    ville: "Abomey",
-    coordonnees: { lat: 7.185, lng: 1.985 },
-    prix: 3000,
-    horaires: "09h00 - 17h00",
-    images: ["/images/PRA.png"],
-    noteMoyenne: 4.7,
-    nombreAvis: 156,
-    dureeVisite: 2,
-    tags: ["musée", "art", "royauté"],
-    score: 96,
-  },
-];
+// Données chargées dynamiquement depuis Convex
+
 
 const INITIAL_FILTERS: Filters = {
   recherche: "",
@@ -304,8 +91,23 @@ export default function ExplorerPage() {
     doAddToItinerary();
   }
 
+  // ── Récupération des sites via Convex ───────────────────────
+  const queryParams = {
+    categorie: filters.categorie,
+    ville: filters.ville,
+    recherche: filters.recherche,
+    budgetMax: filters.budgetMax !== "" ? Number(filters.budgetMax) : undefined,
+    dureeMax: filters.dureeMax !== "" ? Number(filters.dureeMax) : undefined,
+    limit: 100, // Récupère tous les résultats correspondants
+  };
+  const sitesData = useQuery(api.sites.getSites, queryParams);
+
+  const filteredSites = useMemo(() => {
+    return (sitesData?.sites ?? []) as Site[];
+  }, [sitesData]);
+
   function doAddToItinerary() {
-    const selected = MOCK_SITES.filter((s) => checkedSiteIds.has(s._id));
+    const selected = filteredSites.filter((s) => checkedSiteIds.has(s._id));
     addSites(selected);
     setCheckedSiteIds(new Set());
     navigate("/planifier");
@@ -317,40 +119,6 @@ export default function ExplorerPage() {
     hoveredCoords,
     hoveredSite !== null,  // fetch uniquement si un site est survolé
   );
-
-  // ── Filtrage + scoring côté client (mock) ─────────────────
-  // En production : remplacer par useQuery(api.queries.getSites.getSites, { ...filters })
-  const filteredSites = useMemo(() => {
-    let result = [...MOCK_SITES];
-
-    if (filters.recherche.trim()) {
-      const q = filters.recherche.toLowerCase();
-      result = result.filter(
-        (s) =>
-          s.nom.toLowerCase().includes(q) ||
-          s.description.toLowerCase().includes(q) ||
-          s.tags.some((t) => t.toLowerCase().includes(q)) ||
-          s.ville.toLowerCase().includes(q)
-      );
-    }
-    if (filters.categorie !== "tous") {
-      result = result.filter((s) => s.categorie === filters.categorie);
-    }
-    if (filters.ville !== "toutes") {
-      result = result.filter((s) =>
-        s.ville.toLowerCase().includes(filters.ville.toLowerCase())
-      );
-    }
-    if (filters.budgetMax !== "") {
-      result = result.filter((s) => s.prix <= Number(filters.budgetMax));
-    }
-    if (filters.dureeMax !== "") {
-      result = result.filter((s) => s.dureeVisite <= Number(filters.dureeMax));
-    }
-
-    // Tri par score décroissant
-    return result.sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
-  }, [filters]);
 
   // Réinitialise la pagination à chaque changement de filtres
   useEffect(() => {
