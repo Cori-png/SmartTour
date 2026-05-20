@@ -3,6 +3,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import { INITIAL_SITES } from "../data/sites";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import FilterPanel, { type Filters } from "../components/FilterPanel";
@@ -103,8 +104,35 @@ export default function ExplorerPage() {
   const sitesData = useQuery(api.sites.getSites, queryParams);
 
   const filteredSites = useMemo(() => {
-    return (sitesData?.sites ?? []) as Site[];
-  }, [sitesData]);
+    if (sitesData?.sites && sitesData.sites.length > 0) {
+      return sitesData.sites as Site[];
+    }
+    
+    // Fallback locale si la base de données Convex est vide ou en chargement
+    let local = [...INITIAL_SITES];
+    if (filters.categorie && filters.categorie !== "tous") {
+      local = local.filter(s => s.categorie === filters.categorie);
+    }
+    if (filters.ville && filters.ville !== "toutes") {
+      local = local.filter(s => s.ville === filters.ville);
+    }
+    if (filters.recherche) {
+      const search = filters.recherche.toLowerCase();
+      local = local.filter(s => 
+        s.nom.toLowerCase().includes(search) || 
+        s.description.toLowerCase().includes(search)
+      );
+    }
+    if (filters.budgetMax) {
+      const max = Number(filters.budgetMax);
+      local = local.filter(s => s.prix <= max);
+    }
+    if (filters.dureeMax) {
+      const max = Number(filters.dureeMax);
+      local = local.filter(s => s.dureeVisite <= max);
+    }
+    return local;
+  }, [sitesData, filters]);
 
   function doAddToItinerary() {
     const selected = filteredSites.filter((s) => checkedSiteIds.has(s._id));

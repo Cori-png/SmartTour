@@ -2,11 +2,12 @@
 // Affiche les destinations populaires sur la page d'accueil.
 // Utilise des données statiques (mock) pour être indépendant de Convex.
 // TODO: Remplacer par useQuery(api.sites.getPopular) une fois Convex configuré.
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Star, Heart, MapPin, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import { INITIAL_SITES } from "../data/sites";
 
 // ── Types ────────────────────────────────────────────────────
 type Site = {
@@ -41,14 +42,14 @@ function DestCard({ site }: { site: Site }) {
   const hasImage   = !!site.images[0] && !imgErr;
 
   return (
-    <article className="flex-none w-[260px] rounded-2xl border border-gray-200 bg-white overflow-hidden hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 cursor-pointer group snap-start">
+    <article className="flex-none w-[260px] rounded-2xl border border-gray-200 bg-white hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 cursor-pointer group snap-start">
       {/* Image */}
       <div className="relative h-[168px] overflow-hidden bg-gradient-to-br from-green-50 to-emerald-100">
         {hasImage ? (
           <img
             src={site.images[0]}
             alt={site.nom}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-full object-cover"
             loading="lazy"
             onError={() => setImgErr(true)}
           />
@@ -101,7 +102,46 @@ function DestCard({ site }: { site: Site }) {
 // ── Composant principal ──────────────────────────────────────
 export default function Destinations() {
   const popularQuery = useQuery(api.sites.getPopular);
-  const sites = popularQuery ?? [];
+  const sites = popularQuery && popularQuery.length > 0 ? popularQuery : INITIAL_SITES.slice(0, 6);
+  // Dupliquer les sites pour créer l'illusion d'une boucle infinie
+  const infiniteSites = [...sites, ...sites, ...sites, ...sites];
+
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const isPausedRef = useRef(false);
+
+  useEffect(() => {
+    const container = scrollRef.current;
+    if (!container) return;
+    const element = container;
+
+    let animationFrameId: number;
+    let lastTime = performance.now();
+    const pixelsPerSecond = 40; // Vitesse constante sur tous les écrans
+    let exactScroll = element.scrollLeft;
+
+    function step(currentTime: number) {
+      const deltaTime = (currentTime - lastTime) / 1000;
+      lastTime = currentTime;
+
+      if (!isPausedRef.current) {
+        exactScroll += pixelsPerSecond * deltaTime;
+        element.scrollLeft = exactScroll;
+        
+        // La largeur d'un seul jeu de sites est le scrollWidth total divisé par 4 (car on a dupliqué 4 fois)
+        const setWidth = element.scrollWidth / 4;
+        
+        // Dès qu'on a défilé de la largeur exacte d'un set, on se ramène au début silencieusement
+        if (element.scrollLeft >= setWidth) {
+          exactScroll -= setWidth;
+          element.scrollLeft = exactScroll;
+        }
+      }
+      animationFrameId = requestAnimationFrame(step);
+    }
+
+    animationFrameId = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(animationFrameId);
+  }, []);
 
   return (
     <section className="px-6 md:px-12 pt-8 pb-12 bg-white">
@@ -122,10 +162,15 @@ export default function Destinations() {
         </Link>
       </div>
 
-      {/* Scroll horizontal */}
-      <div className="flex gap-5 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory -mx-6 md:-mx-12 px-6 md:px-12">
-        {sites.map((site) => (
-          <Link key={site._id} to="/explorer">
+      {/* Scroll horizontal avec défilement automatique infini */}
+      <div
+        ref={scrollRef}
+        onMouseEnter={() => { isPausedRef.current = true; }}
+        onMouseLeave={() => { isPausedRef.current = false; }}
+        className="flex gap-5 overflow-x-auto py-10 -my-10 pb-4 scrollbar-hide -mx-6 md:-mx-12 px-6 md:px-12 cursor-grab active:cursor-grabbing"
+      >
+        {infiniteSites.map((site, index) => (
+          <Link key={`${site._id}-${index}`} to="/explorer" className="flex-shrink-0">
             <DestCard site={site} />
           </Link>
         ))}

@@ -170,7 +170,7 @@ export default function ClientDashboard() {
   const navigate  = useNavigate();
   const { user, logout } = useAuth();
   const { optimizedRoute } = useItinerary();
-  const { savedItineraries, deleteItinerary: deleteSavedItinerary } = useSavedItineraries(user?.email);
+  const { savedItineraries, deleteItinerary: deleteSavedItinerary } = useSavedItineraries(user?.id);
 
   const [tab,          setTab]          = useState<Tab>("itineraires");
   const [shareOpen,    setShareOpen]    = useState(false);

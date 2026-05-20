@@ -40,7 +40,7 @@ export default function ItineraryResultPage() {
   const navigate                    = useNavigate();
   const { user }                    = useAuth();
   const { optimizedRoute, startPosition, sejour } = useItinerary();
-  const { addItinerary }            = useSavedItineraries(user?.email);
+  const { addItinerary }            = useSavedItineraries(user?.id);
   const [bottomTab, setBottomTab]   = useState<"meteo" | "trafic">("meteo");
   const [saved, setSaved]           = useState(false);
   const traffic = useMemo(() => getTrafficLevel(), []);

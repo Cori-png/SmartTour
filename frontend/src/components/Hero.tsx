@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { MapPin, BarChart2, Home } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -26,6 +27,64 @@ const FEATURES: Feature[] = [
 ];
 
 export default function Hero() {
+  const [showTitle, setShowTitle] = useState(false);
+  const [typedText, setTypedText] = useState("");
+  const [showFeatures, setShowFeatures] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const fullText = "Explorez le Bénin selon vos envies. Trouvez les meilleurs sites touristiques adaptés à vos centres d’intérêt, puis planifiez facilement votre séjour.";
+
+  useEffect(() => {
+    // 1. D'abord on voit uniquement la vidéo, puis le titre apparaît après 500ms
+    const titleT = setTimeout(() => {
+      setShowTitle(true);
+    }, 500);
+
+    // Les features apparaissent après 2 secondes pour guider l'utilisateur
+    const featuresT = setTimeout(() => {
+      setShowFeatures(true);
+    }, 2000);
+
+    return () => {
+      clearTimeout(titleT);
+      clearTimeout(featuresT);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!showTitle) return;
+
+    let timer: number;
+
+    if (!isDeleting) {
+      // Phase d'écriture
+      if (typedText.length < fullText.length) {
+        timer = window.setTimeout(() => {
+          setTypedText(fullText.slice(0, typedText.length + 1));
+        }, 15); // vitesse de dactylographie
+      } else {
+        // Fin de l'écriture -> on attend 4 secondes avant d'effacer
+        timer = window.setTimeout(() => {
+          setIsDeleting(true);
+        }, 4000);
+      }
+    } else {
+      // Phase d'effacement
+      if (typedText.length > 0) {
+        timer = window.setTimeout(() => {
+          setTypedText(fullText.slice(0, typedText.length - 1));
+        }, 8); // effacement rapide
+      } else {
+        // Fin de l'effacement -> on attend 500ms puis on recommence à écrire
+        timer = window.setTimeout(() => {
+          setIsDeleting(false);
+        }, 500);
+      }
+    }
+
+    return () => clearTimeout(timer);
+  }, [showTitle, typedText, isDeleting]);
+
   return (
     <section className="relative h-[340px] sm:h-[400px] md:h-[450px] overflow-hidden">
 
@@ -46,21 +105,30 @@ export default function Hero() {
       {/* Contenu */}
       <div className="relative z-10 flex flex-col justify-center h-full px-6 sm:px-10 md:px-14 max-w-[90vw] sm:max-w-[560px]">
 
-        <h1 className="text-[26px] sm:text-[32px] md:text-[38px] font-bold text-white leading-[1.2] mb-3 sm:mb-4">
+        {/* Titre principal animé */}
+        <h1 className={`text-[26px] sm:text-[32px] md:text-[38px] font-bold text-white leading-[1.2] mb-3 sm:mb-4 transition-all duration-1000 transform ${
+          showTitle ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-4 scale-95"
+        }`}>
           Découvrez le Bénin autrement avec{" "}
-          <span className="block font-extrabold tracking-tight text-gray-900">
+          <span className="block font-extrabold tracking-tight text-black drop-shadow-md">
             Smart<span className="text-green-400">Tour</span>
           </span>
         </h1>
 
-        <p className="text-white/80 text-[13px] sm:text-[15px] mb-6 sm:mb-8 leading-relaxed">
-          Explorez le Bénin selon vos envies. Trouvez les meilleurs sites touristiques adaptés à vos centres d'interêts, puis planifiez facilement votre séjour.
+        {/* Sous-titre avec effet de dactylographie */}
+        <p className="text-white/95 text-[20px] sm:text-[17.5px] md:text-[19px] mb-6 sm:mb-8 leading-relaxed min-h-[90px] sm:min-h-[68px] font-medium drop-shadow-md">
+          {typedText}
+          {typedText.length < fullText.length && (
+            <span className="inline-block w-[2px] h-[18px] bg-green-400 ml-1.5 align-middle animate-pulse">|</span>
+          )}
         </p>
 
-        {/* Features — scroll horizontal sur très petit écran */}
-        <div className="flex gap-4 sm:gap-7 overflow-x-auto scrollbar-hide">
-          {FEATURES.map((f) => (
-            <div key={f.title} className="flex flex-col gap-1 flex-shrink-0">
+        {/* Features animées */}
+        <div className={`flex gap-4 sm:gap-7 overflow-x-auto scrollbar-hide transition-all duration-1000 transform ${
+          showFeatures ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+        }`}>
+          {FEATURES.map((f, i) => (
+            <div key={f.title} className={`flex flex-col gap-1 flex-shrink-0 ${i === 0 ? "animate-float" : i === 1 ? "animate-float-delay-1" : "animate-float-delay-2"}`}>
               <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-white/10 flex items-center justify-center mb-1">
                 {f.icon}
               </div>

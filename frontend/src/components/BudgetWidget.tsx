@@ -1,5 +1,3 @@
-// src/components/BudgetWidget.tsx
-// 3.7 — Estimation détaillée du budget avec sélecteurs ajustables
 import { Wallet, Car, Tent, UtensilsCrossed, ChevronDown } from "lucide-react";
 
 // ── Types ────────────────────────────────────────────────────
@@ -7,56 +5,56 @@ export type TransportMode = "voiture" | "taxi" | "moto" | "bus";
 export type HebergementType = "aucun" | "camping" | "auberge" | "hotel" | "resort";
 
 export type BudgetParams = {
-  transport:   TransportMode;
+  transport: TransportMode;
   hebergement: HebergementType;
   restauration: number;   // FCFA par jour
-  nbJours:      number;
+  nbJours: number;
 };
 
 type Props = {
-  totalKm:      number;
-  totalEntree:  number;
-  params:       BudgetParams;
-  onChange:     (params: BudgetParams) => void;
+  totalKm: number;
+  totalEntree: number;
+  params: BudgetParams;
+  onChange: (params: BudgetParams) => void;
 };
 
 // ── Config tarifs ─────────────────────────────────────────────
 const TRANSPORT_FCFA_KM: Record<TransportMode, number> = {
   voiture: 120,
-  taxi:    180,
-  moto:    80,
-  bus:     50,
+  taxi: 180,
+  moto: 80,
+  bus: 50,
 };
 
 const TRANSPORT_LABELS: Record<TransportMode, { label: string; icon: string }> = {
-  voiture: { label: "Voiture",    icon: "🚗" },
-  taxi:    { label: "Taxi",       icon: "🚕" },
-  moto:    { label: "Taxi-moto",  icon: "🛵" },
-  bus:     { label: "Bus",        icon: "🚌" },
+  voiture: { label: "Voiture", icon: "🚗" },
+  taxi: { label: "Taxi", icon: "🚕" },
+  moto: { label: "Taxi-moto", icon: "🛵" },
+  bus: { label: "Bus", icon: "🚌" },
 };
 
 const HEBERGEMENT_FCFA_NUIT: Record<HebergementType, number> = {
-  aucun:   0,
+  aucun: 0,
   camping: 3000,
   auberge: 8000,
-  hotel:   20000,
-  resort:  45000,
+  hotel: 20000,
+  resort: 45000,
 };
 
 const HEBERGEMENT_LABELS: Record<HebergementType, { label: string; icon: string }> = {
-  aucun:   { label: "Pas d'hébergement", icon: "🏠" },
-  camping: { label: "Camping",           icon: "⛺" },
-  auberge: { label: "Auberge",           icon: "🏡" },
-  hotel:   { label: "Hôtel standard",    icon: "🏨" },
-  resort:  { label: "Resort / Luxe",     icon: "🏩" },
+  aucun: { label: "Pas d'hébergement", icon: "🏠" },
+  camping: { label: "Camping", icon: "⛺" },
+  auberge: { label: "Auberge", icon: "🏡" },
+  hotel: { label: "Hôtel standard", icon: "🏨" },
+  resort: { label: "Resort / Luxe", icon: "🏩" },
 };
 
 // ── Helpers ───────────────────────────────────────────────────
 export function computeBudget(totalKm: number, totalEntree: number, p: BudgetParams) {
-  const transport   = Math.round(totalKm * TRANSPORT_FCFA_KM[p.transport]);
+  const transport = Math.round(totalKm * TRANSPORT_FCFA_KM[p.transport]);
   const hebergement = HEBERGEMENT_FCFA_NUIT[p.hebergement] * Math.max(0, p.nbJours - 1);
   const restauration = p.restauration * p.nbJours;
-  const total       = totalEntree + transport + hebergement + restauration;
+  const total = totalEntree + transport + hebergement + restauration;
   return { transport, hebergement, restauration, total };
 }
 
@@ -133,10 +131,10 @@ export default function BudgetWidget({ totalKm, totalEntree, params, onChange }:
   }
 
   const barItems = [
-    { label: "Entrées",        value: totalEntree,        color: "bg-green-500" },
-    { label: "Transport",      value: budget.transport,   color: "bg-blue-500"  },
-    { label: "Hébergement",    value: budget.hebergement, color: "bg-purple-500"},
-    { label: "Restauration",   value: budget.restauration,color: "bg-orange-400"},
+    { label: "Entrées", value: totalEntree, color: "bg-green-500" },
+    { label: "Transport", value: budget.transport, color: "bg-blue-500" },
+    { label: "Hébergement", value: budget.hebergement, color: "bg-purple-500" },
+    { label: "Restauration", value: budget.restauration, color: "bg-orange-400" },
   ];
 
   return (
@@ -159,7 +157,7 @@ export default function BudgetWidget({ totalKm, totalEntree, params, onChange }:
             options={(Object.keys(TRANSPORT_LABELS) as TransportMode[]).map((k) => ({
               value: k,
               label: TRANSPORT_LABELS[k].label,
-              icon:  TRANSPORT_LABELS[k].icon,
+              icon: TRANSPORT_LABELS[k].icon,
             }))}
           />
           <p className="text-[10px] text-gray-400 mt-1">
@@ -178,7 +176,7 @@ export default function BudgetWidget({ totalKm, totalEntree, params, onChange }:
             options={(Object.keys(HEBERGEMENT_LABELS) as HebergementType[]).map((k) => ({
               value: k,
               label: HEBERGEMENT_LABELS[k].label,
-              icon:  HEBERGEMENT_LABELS[k].icon,
+              icon: HEBERGEMENT_LABELS[k].icon,
             }))}
           />
           <p className="text-[10px] text-gray-400 mt-1">
@@ -214,12 +212,16 @@ export default function BudgetWidget({ totalKm, totalEntree, params, onChange }:
       {/* Tableau détaillé */}
       <div className="space-y-2 border-t border-gray-100 pt-3">
         {[
-          { label: "Entrées sites",                 value: totalEntree },
-          { label: `Transport (~${totalKm} km)`,    value: budget.transport },
-          { label: `Hébergement (${Math.max(0, params.nbJours - 1)} nuit${params.nbJours > 2 ? "s" : ""})`,
-                                                    value: budget.hebergement },
-          { label: `Restauration (${params.nbJours} jour${params.nbJours > 1 ? "s" : ""})`,
-                                                    value: budget.restauration },
+          { label: "Entrées sites", value: totalEntree },
+          { label: `Transport (~${totalKm} km)`, value: budget.transport },
+          {
+            label: `Hébergement (${Math.max(0, params.nbJours - 1)} nuit${params.nbJours > 2 ? "s" : ""})`,
+            value: budget.hebergement
+          },
+          {
+            label: `Restauration (${params.nbJours} jour${params.nbJours > 1 ? "s" : ""})`,
+            value: budget.restauration
+          },
         ].map(({ label, value }) => (
           <div key={label} className="flex justify-between text-[12px]">
             <span className="text-gray-500">{label}</span>

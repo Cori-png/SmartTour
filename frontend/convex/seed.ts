@@ -13,7 +13,6 @@ const SITES = [
     prix: 1000,
     horaires: "08h00 - 18h00",
     images: [
-      "/images/Route.png",
     ],
     noteMoyenne: 4.8,
     nombreAvis: 312,
@@ -30,7 +29,7 @@ const SITES = [
     prix: 5000,
     horaires: "07h00 - 17h00",
     images: [
-      "/images/herobg.png",
+      
     ],
     noteMoyenne: 4.7,
     nombreAvis: 489,

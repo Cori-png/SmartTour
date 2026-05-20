@@ -57,6 +57,15 @@ export default defineSchema({
     dateCreation: v.number(),        // timestamp
     nom: v.optional(v.string()),
     partage: v.optional(v.boolean()),
+    startPosition: v.optional(
+      v.object({
+        lat: v.number(),
+        lng: v.number(),
+        label: v.string(),
+      })
+    ),
+    totalKm: v.optional(v.number()),
+    sejour: v.optional(v.string()),
   }).index("by_user", ["userId"]),
 
   avis: defineTable({

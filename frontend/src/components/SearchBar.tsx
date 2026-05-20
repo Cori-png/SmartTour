@@ -55,7 +55,7 @@ export default function SearchBar() {
                   i % 2 === 0 ? "border-r" : ""
                 } border-gray-200`}
               >
-                <label className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.6px] text-gray-400 select-none">
+                <label className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.6px] text-black select-none">
                   {field.icon}{field.label}
                 </label>
                 <input
@@ -66,7 +66,7 @@ export default function SearchBar() {
                   placeholder={field.placeholder}
                   min={field.type === "number" ? 0 : undefined}
                   autoComplete="off"
-                  className="text-[13px] text-gray-700 outline-none bg-transparent"
+                  className="text-[13px] text-black outline-none bg-transparent"
                 />
               </div>
             ))}
@@ -90,7 +90,7 @@ export default function SearchBar() {
                 i < FIELDS.length - 1 ? "border-r border-gray-200" : ""
               }`}
             >
-              <label className="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.6px] text-gray-400 select-none whitespace-nowrap">
+              <label className="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.6px] text-black select-none whitespace-nowrap">
                 {field.icon}{field.label}
               </label>
               <input
@@ -101,7 +101,7 @@ export default function SearchBar() {
                 placeholder={field.placeholder}
                 min={field.type === "number" ? 0 : undefined}
                 autoComplete="off"
-                className="text-[13px] text-gray-700 outline-none bg-transparent w-full"
+                className="text-[13px] text-black outline-none bg-transparent w-full"
               />
             </div>
           ))}

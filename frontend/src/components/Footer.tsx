@@ -95,13 +95,13 @@ export default function Footer() {
           © {new Date().getFullYear()} SmartTour Bénin. Tous droits réservés.
         </p>
         <div className="flex gap-5">
-          <Link to="/contact" className="text-xs text-gray-500 hover:text-green-400 transition-colors">
+          <Link to="/confidentialite" className="text-xs text-gray-500 hover:text-green-400 transition-colors">
             Confidentialité
           </Link>
-          <Link to="/a-propos" className="text-xs text-gray-500 hover:text-green-400 transition-colors">
+          <Link to="/mentions-legales" className="text-xs text-gray-500 hover:text-green-400 transition-colors">
             Mentions légales
           </Link>
-          <Link to="/contact" className="text-xs text-gray-500 hover:text-green-400 transition-colors">
+          <Link to="/cookies" className="text-xs text-gray-500 hover:text-green-400 transition-colors">
             Cookies
           </Link>
         </div>

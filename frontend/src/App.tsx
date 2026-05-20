@@ -14,6 +14,9 @@ import ExplorerPage from "./pages/ExplorerPage";
 import PlanifierPage from "./pages/PlanifierPage";
 import ItineraryResultPage from "./pages/ItineraryResultPage";
 import DashboardPage from "./pages/DashboardPage";
+import Confidentialite from "./pages/Confidentialite";
+import MentionsLegales from "./pages/MentionsLegales";
+import Cookies from "./pages/Cookies";
 
 function App() {
   return (
@@ -34,6 +37,9 @@ function App() {
                   <Route path="/planifier"  element={<PlanifierPage />} />
                   <Route path="/itineraire" element={<ItineraryResultPage />} />
                   <Route path="/dashboard"  element={<DashboardPage />} />
+                  <Route path="/confidentialite" element={<Confidentialite />} />
+                  <Route path="/mentions-legales" element={<MentionsLegales />} />
+                  <Route path="/cookies"         element={<Cookies />} />
                 </Routes>
               </BrowserRouter>
             </ItineraryProvider>

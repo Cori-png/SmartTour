@@ -4,6 +4,7 @@ import SearchBar     from "../components/SearchBar";
 import Destinations  from "../components/Destinations";
 import FeaturesStrip from "../components/FeaturesStrip";
 import Footer        from "../components/Footer";
+import ScrollReveal  from "../components/ScrollReveal";
 import { useState }  from "react";
 import {
   ChevronDown, ChevronUp, HelpCircle, MessageCircle,
@@ -98,10 +99,13 @@ export default function HomePage() {
       <Hero />
       <SearchBar />
       <Destinations />
-      <FeaturesStrip />
+      <ScrollReveal delay={100}>
+        <FeaturesStrip />
+      </ScrollReveal>
 
       {/* ── Section FAQ ────────────────────────────────────── */}
-      <section className="max-w-6xl mx-auto px-4 md:px-6 py-12 md:py-16">
+      <ScrollReveal delay={200}>
+        <section className="max-w-6xl mx-auto px-4 md:px-6 py-12 md:py-16">
         {/* Titre */}
         <div className="text-center mb-10 md:mb-12">
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-green-100 text-green-700 text-[12px] font-bold mb-4">
@@ -194,8 +198,11 @@ export default function HomePage() {
 
         </div>
       </section>
+      </ScrollReveal>
 
-      <Footer />
+      <ScrollReveal delay={100}>
+        <Footer />
+      </ScrollReveal>
     </div>
   );
 }
