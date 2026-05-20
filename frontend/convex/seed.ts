@@ -12,8 +12,7 @@ const SITES = [
     coordonnees: { lat: 6.3536, lng: 2.0887 },
     prix: 1000,
     horaires: "08h00 - 18h00",
-    images: [
-    ],
+    images: [],
     noteMoyenne: 4.8,
     nombreAvis: 312,
     dureeVisite: 2,
@@ -29,7 +28,7 @@ const SITES = [
     prix: 5000,
     horaires: "07h00 - 17h00",
     images: [
-      
+
     ],
     noteMoyenne: 4.7,
     nombreAvis: 489,
@@ -120,7 +119,7 @@ const SITES = [
     coordonnees: { lat: 7.185, lng: 1.985 },
     prix: 3000,
     horaires: "09h00 - 17h00",
-    images: ["/images/PRA.png"],
+    images: ["/images/musee.png"],
     noteMoyenne: 4.7,
     nombreAvis: 156,
     dureeVisite: 2,

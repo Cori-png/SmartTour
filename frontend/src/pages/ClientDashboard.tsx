@@ -186,21 +186,27 @@ export default function ClientDashboard() {
     doc.setFillColor(21, 128, 61); // green-700
     doc.rect(0, 0, 210, 40, "F");
     
+    // Logo SmartTour
+    try {
+      doc.addImage("/images/Logo_ST.png", "PNG", 15, 6, 50, 28);
+    } catch (e) {
+      doc.setTextColor(255, 255, 255);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(20);
+      doc.text("SMARTTOUR", 15, 22);
+    }
+    
     doc.setTextColor(255, 255, 255);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(22);
-    doc.text("SMARTTOUR BENIN", 15, 18);
-    
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(11);
-    doc.text("Votre itinéraire de voyage intelligent optimisé", 15, 26);
-    doc.text(`Généré le ${new Date(it.savedAt).toLocaleDateString("fr-FR")}`, 15, 33);
+    doc.setFontSize(10.5);
+    doc.text("Votre itinéraire de voyage intelligent optimisé", 72, 20);
+    doc.text(`Généré le ${new Date(it.savedAt).toLocaleDateString("fr-FR")}`, 72, 28);
     
-    // Title
+    // Title with arrow replaced by ~ to avoid encoding issues in standard PDF fonts
     doc.setTextColor(17, 24, 39);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(16);
-    doc.text(it.name, 15, 55);
+    doc.text(it.name.replace(/ → /g, " ~ "), 15, 55);
     
     // Stats Summary Boxes
     doc.setFillColor(240, 253, 244);
