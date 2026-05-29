@@ -3,7 +3,7 @@ import { useState } from "react";
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { Globe, Users, BarChart3, Plus, Pencil, Trash2, LogOut, Shield, X, Save,
-  Map, Star } from "lucide-react";
+  Map, Star, MessageSquare } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useAuth } from "../context/AuthContext";
@@ -16,7 +16,7 @@ const CAT_COLORS: Record<string,string> = {
   religion:"bg-rose-100 text-rose-700",
 };
 
-type Tab = "sites" | "users" | "stats";
+type Tab = "sites" | "users" | "reviews" | "stats";
 
 type SiteForm = { nom:string; ville:string; categorie:string; prix:string; horaires:string; description:string; dureeVisite:string; };
 const EMPTY_FORM: SiteForm = { nom:"", ville:"", categorie:"histoire", prix:"0", horaires:"", description:"", dureeVisite:"1" };
@@ -35,6 +35,16 @@ export default function AdminDashboard() {
   const { user, logout, allUsers, deleteUser } = useAuth();
   const { sites, addSite, updateSite, deleteSite } = useSites();
   const [tab, setTab] = useState<Tab>("sites");
+
+  const [reviews, setReviews] = useState<any[]>(() => {
+    try { return JSON.parse(localStorage.getItem("smarttour-reviews") ?? "[]"); } catch { return []; }
+  });
+
+  function handleDeleteReview(id: string) {
+    const updated = reviews.filter(r => r.id !== id);
+    setReviews(updated);
+    localStorage.setItem("smarttour-reviews", JSON.stringify(updated));
+  }
 
   // Modal Add/Edit
   const [modalOpen,  setModalOpen]  = useState(false);
@@ -64,7 +74,7 @@ export default function AdminDashboard() {
   }
 
   const tourists = allUsers.filter(u => u.role === "tourist");
-  const totalAvis = sites.reduce((s, x) => s + (x.nombreAvis ?? 0), 0);
+  const totalReviews = reviews.length;
 
   if (!user) return null;
 
@@ -91,7 +101,7 @@ export default function AdminDashboard() {
           <StatCard label="Sites enregistrés"   value={sites.length}                       color="bg-green-50"  icon={<Map className="w-5 h-5 text-green-600" />} />
           <StatCard label="Utilisateurs"         value={tourists.length}                    color="bg-blue-50"   icon={<Users className="w-5 h-5 text-blue-600" />} />
           <StatCard label="Itinéraires générés"  value="3 271"                               color="bg-purple-50" icon={<BarChart3 className="w-5 h-5 text-purple-600" />} />
-          <StatCard label="Avis reçus"           value={totalAvis.toLocaleString("fr-FR")}  color="bg-amber-50"  icon={<Star className="w-5 h-5 text-amber-500" />} />
+          <StatCard label="Avis reçus"           value={totalReviews.toLocaleString("fr-FR")}  color="bg-amber-50"  icon={<Star className="w-5 h-5 text-amber-500" />} />
         </div>
 
         {/* Onglets */}
@@ -99,6 +109,7 @@ export default function AdminDashboard() {
           {([
             { key:"sites", label:"Gérer les sites",         Icon:Globe      },
             { key:"users", label:"Gérer les utilisateurs",  Icon:Users      },
+            { key:"reviews", label:"Gérer les avis",        Icon:MessageSquare },
             { key:"stats", label:"Statistiques",            Icon:BarChart3  },
           ] as const).map(t => (
             <button key={t.key} onClick={() => setTab(t.key)}
@@ -182,6 +193,75 @@ export default function AdminDashboard() {
                         <td className="px-5 py-3.5">
                           <button onClick={() => { if(confirm(`Supprimer l'utilisateur "${u.nom}" ?`)) deleteUser(u.id); }}
                             className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 transition-colors">
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── REVIEWS ── */}
+        {tab === "reviews" && (
+          <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+              <h2 className="text-[14px] font-bold text-gray-900">Avis et témoignages sur la plateforme ({reviews.length})</h2>
+            </div>
+            {reviews.length === 0 ? (
+              <div className="py-12 text-center text-gray-400 text-[13px]">Aucun avis n'a été publié pour le moment.</div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-[13px]">
+                  <thead>
+                    <tr className="bg-gray-50 border-b border-gray-100">
+                      {["Auteur", "Note", "Commentaire", "Date", "Actions"].map(h => (
+                        <th key={h} className="px-5 py-3 text-left text-[11px] font-bold uppercase text-gray-400">{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-50">
+                    {reviews.map(r => (
+                      <tr key={r.id} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-5 py-3.5">
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-8 h-8 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-[12px]">
+                              {r.nom.charAt(0).toUpperCase()}
+                            </div>
+                            <span className="font-semibold text-gray-900">{r.nom}</span>
+                          </div>
+                        </td>
+                        <td className="px-5 py-3.5 font-semibold text-amber-500">
+                          <div className="flex items-center gap-0.5">
+                            {[1, 2, 3, 4, 5].map(star => (
+                              <Star
+                                key={star}
+                                className={`w-3.5 h-3.5 ${
+                                  star <= r.note
+                                    ? "fill-amber-400 text-amber-400"
+                                    : "text-gray-200 fill-transparent"
+                                }`}
+                              />
+                            ))}
+                          </div>
+                        </td>
+                        <td className="px-5 py-3.5 text-gray-600 max-w-[320px]">
+                          <p className="line-clamp-2 italic">« {r.commentaire} »</p>
+                        </td>
+                        <td className="px-5 py-3.5 text-gray-500">{r.date}</td>
+                        <td className="px-5 py-3.5">
+                          <button
+                            onClick={() => {
+                              if (confirm(`Supprimer le témoignage de "${r.nom}" ?`)) {
+                                handleDeleteReview(r.id);
+                              }
+                            }}
+                            className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 transition-colors"
+                            title="Supprimer"
+                          >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </td>

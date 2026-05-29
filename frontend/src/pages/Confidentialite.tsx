@@ -193,10 +193,10 @@ export default function Confidentialite() {
               Pour exercer vos droits ou pour toute question concernant la confidentialité de vos données chez SmartTour Bénin, vous pouvez nous écrire à l'adresse e-mail dédiée :
             </p>
             <a 
-              href="mailto:privacy@smarttour-benin.com" 
+              href="mailto:aladecorina@gmail.com" 
               className="inline-flex items-center gap-2 px-6 py-3.5 bg-emerald-600 hover:bg-emerald-700 transition-colors text-white font-semibold rounded-2xl text-base shadow-sm"
             >
-              privacy@smarttour-benin.com
+              aladecorina@gmail.com
             </a>
           </div>
 

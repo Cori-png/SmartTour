@@ -32,7 +32,7 @@ export default function LoginPage() {
     setError("");
     if (!form.email || !form.password) { setError("Veuillez remplir tous les champs."); return; }
     const result: AuthResult = await login({ email: form.email, password: form.password });
-    if (!result.success) { setError(result.error); return; }
+    if (!result.success) { setError(result.error || "Identifiants incorrects."); return; }
     // Rediriger selon le rôle ou la page demandée
     navigate(from === "/login" || from === "/register" ? "/" : from, { replace: true });
   }

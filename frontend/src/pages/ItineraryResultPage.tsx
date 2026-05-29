@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft, MapPin, Clock, Wallet, Star, Navigation,
   CloudSun, CheckCircle2, Save, Shuffle,
-  Timer, AlertTriangle, Route, BookmarkCheck,
+  Timer, AlertTriangle, Route, BookmarkCheck, Loader2,
 } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -13,6 +13,9 @@ import WeatherWidget from "../components/WeatherWidget";
 import { useItinerary } from "../context/ItineraryContext";
 import { useAuth } from "../context/AuthContext";
 import { useSavedItineraries } from "../hooks/useSavedItineraries";
+import { toast } from "react-hot-toast";
+import PlatformRatingModal from "../components/PlatformRatingModal";
+
 
 function haversineKm(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
   const R = 6371, dLat = ((b.lat - a.lat) * Math.PI) / 180, dLng = ((b.lng - a.lng) * Math.PI) / 180;
@@ -40,9 +43,11 @@ export default function ItineraryResultPage() {
   const navigate                    = useNavigate();
   const { user }                    = useAuth();
   const { optimizedRoute, startPosition, sejour } = useItinerary();
-  const { addItinerary }            = useSavedItineraries(user?.id);
+  const { addItinerary }            = useSavedItineraries(user?.email);
   const [bottomTab, setBottomTab]   = useState<"meteo" | "trafic">("meteo");
   const [saved, setSaved]           = useState(false);
+  const [isSaving, setIsSaving]     = useState(false);
+  const [ratingOpen, setRatingOpen] = useState(false);
   const traffic = useMemo(() => getTrafficLevel(), []);
 
   if (optimizedRoute.length === 0) {
@@ -74,20 +79,40 @@ export default function ItineraryResultPage() {
   const totalHTrajet = steps.reduce((s, x) => s + x.minFromPrev, 0) / 60;
   const totalEntree  = optimizedRoute.reduce((s, x) => s + x.prix, 0);
 
-  function handleSave() {
-    const name = [...new Set(optimizedRoute.map(s => s.ville))].join(" → ") || "Mon itinéraire";
-    addItinerary({
-      id:            Date.now().toString(),
-      savedAt:       new Date().toISOString(),
-      name,
-      startPosition,
-      sites:         [...optimizedRoute],
-      totalKm,
-      totalEntree,
-      sejour,
-    });
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+  async function handleSave() {
+    if (!user) {
+      toast.error("Veuillez vous connecter pour sauvegarder votre itinéraire.");
+      navigate("/login", { state: { from: { pathname: "/itineraire" } } });
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const name = [...new Set(optimizedRoute.map(s => s.ville))].join(" → ") || "Mon itinéraire";
+      await addItinerary({
+        id:            Date.now().toString(),
+        savedAt:       new Date().toISOString(),
+        name,
+        startPosition,
+        sites:         [...optimizedRoute],
+        totalKm,
+        totalEntree,
+        sejour,
+      });
+      toast.success("Itinéraire sauvegardé avec succès !");
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+      
+      // Affiche le modal de notation 1.5 seconde après la confirmation de sauvegarde
+      setTimeout(() => {
+        setRatingOpen(true);
+      }, 1500);
+    } catch (err: any) {
+      console.error("Erreur lors de la sauvegarde :", err);
+      toast.error(err.message || "Erreur lors de la sauvegarde.");
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   return (
@@ -111,9 +136,28 @@ export default function ItineraryResultPage() {
               </p>
             </div>
           </div>
-          <button onClick={handleSave} disabled={saved}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-bold transition-all ${saved ? "bg-green-100 text-green-700 border border-green-300 cursor-default" : "bg-green-700 text-white hover:bg-green-800 shadow-sm active:scale-95"}`}>
-            {saved ? <><BookmarkCheck className="w-4 h-4" />Sauvegardé !</> : <><Save className="w-4 h-4" />Sauvegarder</>}
+          <button onClick={handleSave} disabled={saved || isSaving}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-bold transition-all ${
+              saved
+                ? "bg-green-100 text-green-700 border border-green-300 cursor-default"
+                : isSaving
+                ? "bg-green-100 text-green-600 border border-green-200 cursor-wait"
+                : "bg-green-700 text-white hover:bg-green-800 shadow-sm active:scale-95"
+            }`}
+          >
+            {saved ? (
+              <>
+                <BookmarkCheck className="w-4 h-4" /> Sauvegardé !
+              </>
+            ) : isSaving ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" /> Un instant...
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4" /> Sauvegarder
+              </>
+            )}
           </button>
         </div>
       </div>
@@ -249,6 +293,11 @@ export default function ItineraryResultPage() {
           </div>
         </div>
       </div>
+      <PlatformRatingModal
+        isOpen={ratingOpen}
+        onClose={() => setRatingOpen(false)}
+        userNom={user?.nom || ""}
+      />
       <Footer />
     </div>
   );

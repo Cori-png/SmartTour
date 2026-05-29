@@ -5,10 +5,10 @@ import Destinations  from "../components/Destinations";
 import FeaturesStrip from "../components/FeaturesStrip";
 import Footer        from "../components/Footer";
 import ScrollReveal  from "../components/ScrollReveal";
-import { useState }  from "react";
+import { useState, useEffect }  from "react";
 import {
   ChevronDown, ChevronUp, HelpCircle, MessageCircle,
-  Map, ClipboardList, User, Wallet,
+  Map, ClipboardList, User, Wallet, Star
 } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -87,9 +87,55 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
   );
 }
 
+// ── Type Témoignage ──────────────────────────────────────────
+type Testimonial = {
+  id: string;
+  nom: string;
+  note: number;
+  commentaire: string;
+  date: string;
+  isUserGenerated?: boolean;
+};
+
+const DEFAULT_TESTIMONIALS: Testimonial[] = [
+  {
+    id: "def_1",
+    nom: "Aurélie Dossou",
+    note: 5,
+    commentaire: "SmartTour a complètement changé ma façon de faire découvrir le Bénin à mes proches. L'itinéraire optimisé nous a fait gagner un temps précieux !",
+    date: "14 mai 2026",
+  },
+  {
+    id: "def_2",
+    nom: "Koffi Mensah",
+    note: 4,
+    commentaire: "Simple, rapide et très précis au niveau des tarifs des sites touristiques. La météo en temps réel par étape est un vrai plus.",
+    date: "8 mai 2026",
+  },
+  {
+    id: "def_3",
+    nom: "Sarah Johnson",
+    note: 5,
+    commentaire: "Une excellente application pour planifier son voyage au Bénin. J'ai adoré la carte interactive et l'estimation du budget qui était très fiable.",
+    date: "28 avril 2026",
+  },
+];
+
 // ── Page principale ──────────────────────────────────────────
 export default function HomePage() {
   const [activeCategory, setActiveCategory] = useState("decouverte");
+  const [testimonials, setTestimonials] = useState<Testimonial[]>(DEFAULT_TESTIMONIALS);
+
+  useEffect(() => {
+    try {
+      const userReviews = JSON.parse(localStorage.getItem("smarttour-reviews") ?? "[]");
+      if (userReviews.length > 0) {
+        setTestimonials([...userReviews, ...DEFAULT_TESTIMONIALS]);
+      }
+    } catch (e) {
+      console.error("Erreur de chargement des avis locaux :", e);
+    }
+  }, []);
   const currentCat = FAQ_CATEGORIES.find(c => c.id === activeCategory)!;
 
   return (
@@ -101,6 +147,75 @@ export default function HomePage() {
       <Destinations />
       <ScrollReveal delay={100}>
         <FeaturesStrip />
+      </ScrollReveal>
+
+      {/* ── Section Témoignages ────────────────────────────── */}
+      <ScrollReveal delay={150}>
+        <section className="bg-gray-50 border-y border-gray-200 py-12 md:py-16">
+          <div className="max-w-6xl mx-auto px-4 md:px-6">
+            {/* Titre */}
+            <div className="text-center mb-10 md:mb-12">
+              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-green-100 text-green-700 text-[12px] font-bold mb-4">
+                ⭐ Témoignages
+              </span>
+              <h2 className="text-[24px] sm:text-[28px] md:text-[34px] font-extrabold text-gray-900 tracking-tight">
+                Ce que disent nos voyageurs
+              </h2>
+              <p className="text-gray-500 text-[14px] sm:text-[15px] mt-2 max-w-xl mx-auto">
+                Découvrez les retours d'expérience des personnes qui ont planifié leur séjour avec SmartTour Bénin.
+              </p>
+            </div>
+
+            {/* Grille */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {testimonials.slice(0, 6).map((t) => (
+                <div
+                  key={t.id}
+                  className="bg-white rounded-3xl border border-gray-200 p-6 flex flex-col justify-between shadow-sm hover:shadow-md hover:border-green-300 transition-all duration-300 group"
+                >
+                  <div className="space-y-4">
+                    {/* Étoiles */}
+                    <div className="flex items-center gap-1">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          className={`w-4 h-4 ${
+                            star <= t.note
+                              ? "fill-amber-400 text-amber-400"
+                              : "text-gray-200 fill-transparent"
+                          }`}
+                        />
+                      ))}
+                    </div>
+
+                    {/* Commentaire */}
+                    <p className="text-[13px] text-gray-600 leading-relaxed italic group-hover:text-gray-800 transition-colors">
+                      « {t.commentaire} »
+                    </p>
+                  </div>
+
+                  {/* Profil */}
+                  <div className="flex items-center gap-3 mt-6 pt-4 border-t border-gray-100">
+                    <div className="w-9 h-9 rounded-full bg-green-700 text-white font-extrabold text-[12px] flex items-center justify-center shadow-sm">
+                      {t.nom.split(" ").map(w => w[0]?.toUpperCase() ?? "").slice(0, 2).join("")}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[13px] font-bold text-gray-800">{t.nom}</span>
+                        {t.isUserGenerated && (
+                          <span className="px-1.5 py-0.5 rounded-full bg-green-50 text-green-700 text-[9px] font-extrabold border border-green-200">
+                            Vérifié
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-[11px] text-gray-400">{t.date}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
       </ScrollReveal>
 
       {/* ── Section FAQ ────────────────────────────────────── */}

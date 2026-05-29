@@ -22,6 +22,11 @@ type Site = {
 // Les données MOCK_POPULAR ont été remplacées par une requête dynamique vers Convex.
 
 
+// ── Map de secours : nom de site → image locale ─────────────
+const FALLBACK_IMAGE: Record<string, string> = Object.fromEntries(
+  INITIAL_SITES.map((s) => [s.nom, s.images[0] ?? ""])
+);
+
 // ── Couleurs et emojis par catégorie ────────────────────────
 const CAT_COLORS: Record<string, string> = {
   histoire: "bg-amber-100 text-amber-700",
@@ -39,7 +44,9 @@ function DestCard({ site }: { site: Site }) {
   const [imgErr, setImgErr] = useState(false);
 
   const colorClass = CAT_COLORS[site.categorie] ?? "bg-gray-100 text-gray-600";
-  const hasImage   = !!site.images[0] && !imgErr;
+  // Utiliser l'image du site, avec fallback vers INITIAL_SITES par nom, puis vers herobg.png
+  const rawImg = site.images[0] || FALLBACK_IMAGE[site.nom] || "/images/herobg.png";
+  const hasImage = !!rawImg && !imgErr;
 
   return (
     <article className="flex-none w-[260px] rounded-2xl border border-gray-200 bg-white hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 cursor-pointer group snap-start">
@@ -47,7 +54,7 @@ function DestCard({ site }: { site: Site }) {
       <div className="relative h-[168px] overflow-hidden bg-gradient-to-br from-green-50 to-emerald-100">
         {hasImage ? (
           <img
-            src={site.images[0]}
+            src={rawImg}
             alt={site.nom}
             className="w-full h-full object-cover"
             loading="lazy"
@@ -102,7 +109,12 @@ function DestCard({ site }: { site: Site }) {
 // ── Composant principal ──────────────────────────────────────
 export default function Destinations() {
   const popularQuery = useQuery(api.sites.getPopular);
-  const sites = popularQuery && popularQuery.length > 0 ? popularQuery : INITIAL_SITES.slice(0, 6);
+  // undefined = chargement en cours → utiliser INITIAL_SITES
+  // [] = Convex vide → utiliser INITIAL_SITES
+  // [...sites] = utiliser Convex
+  const sites = popularQuery && popularQuery.length > 0
+    ? popularQuery
+    : INITIAL_SITES.slice(0, 6);
   // Dupliquer les sites pour créer l'illusion d'une boucle infinie
   const infiniteSites = [...sites, ...sites, ...sites, ...sites];
 

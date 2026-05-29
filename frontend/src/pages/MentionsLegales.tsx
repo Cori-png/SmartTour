@@ -60,7 +60,7 @@ export default function MentionsLegales() {
                   </div>
                   <div>
                     <p className="text-gray-400 dark:text-slate-400 text-xs uppercase font-bold">Contact principal</p>
-                    <p className="font-semibold text-gray-800 dark:text-white">contact@smarttour.bj</p>
+                    <p className="font-semibold text-gray-800 dark:text-white">aladecorina@gmail.com</p>
                     <p>+229 01 00 00 00</p>
                   </div>
                 </div>
@@ -137,7 +137,7 @@ export default function MentionsLegales() {
                 </div>
                 <div>
                   <p className="text-gray-400 uppercase font-bold">Contact Editorial</p>
-                  <p className="font-semibold text-gray-850 dark:text-white">contact@smarttour-benin.com</p>
+                  <p className="font-semibold text-gray-850 dark:text-white">aladecorina@gmail.com</p>
                 </div>
               </div>
             </div>
@@ -150,10 +150,10 @@ export default function MentionsLegales() {
                 Pour signaler un contenu inapproprié ou erroné sur un site touristique :
               </p>
               <a
-                href="mailto:contact@smarttour-benin.com"
+                href="mailto:aladecorina@gmail.com"
                 className="inline-block text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition-colors px-4 py-2 rounded-xl"
               >
-                contact@smarttour-benin.com
+                aladecorina@gmail.com
               </a>
             </div>
           </div>

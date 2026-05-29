@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { MapPin, BarChart2, Home } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -31,10 +31,17 @@ export default function Hero() {
   const [typedText, setTypedText] = useState("");
   const [showFeatures, setShowFeatures] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [videoError, setVideoError] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const fullText = "Explorez le Bénin selon vos envies. Trouvez les meilleurs sites touristiques adaptés à vos centres d’intérêt, puis planifiez facilement votre séjour.";
 
   useEffect(() => {
+    // Tenter de lire la vidéo programmatiquement (contourne certains blocages navigateur)
+    if (videoRef.current && !videoError) {
+      videoRef.current.play().catch(() => setVideoError(true));
+    }
+
     // 1. D'abord on voit uniquement la vidéo, puis le titre apparaît après 500ms
     const titleT = setTimeout(() => {
       setShowTitle(true);
@@ -49,7 +56,7 @@ export default function Hero() {
       clearTimeout(titleT);
       clearTimeout(featuresT);
     };
-  }, []);
+  }, [videoError]);
 
   useEffect(() => {
     if (!showTitle) return;
@@ -88,16 +95,28 @@ export default function Hero() {
   return (
     <section className="relative h-[340px] sm:h-[400px] md:h-[450px] overflow-hidden">
 
-      {/* Vidéo de fond */}
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
+      {/* Image de fond de secours (visible si la vidéo ne charge pas) */}
+      <img
+        src="/images/herobg.png"
+        alt="Bénin paysage"
         className="absolute top-0 left-0 w-full h-full object-cover"
-      >
-        <source src="/images/VID-20260506-WA0110.mp4" type="video/mp4" />
-      </video>
+      />
+
+      {/* Vidéo de fond par-dessus l'image, masquée si erreur */}
+      {!videoError && (
+        <video
+          ref={videoRef}
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute top-0 left-0 w-full h-full object-cover"
+          onError={() => setVideoError(true)}
+          onCanPlay={() => videoRef.current?.play().catch(() => setVideoError(true))}
+        >
+          <source src="/images/VID-20260506-WA0110.mp4" type="video/mp4" />
+        </video>
+      )}
 
       {/* Overlay sombre */}
       <div className="absolute inset-0 bg-black/45" />

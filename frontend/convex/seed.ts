@@ -12,7 +12,7 @@ const SITES = [
     coordonnees: { lat: 6.3536, lng: 2.0887 },
     prix: 1000,
     horaires: "08h00 - 18h00",
-    images: [],
+    images: ["/images/Route.png"],
     noteMoyenne: 4.8,
     nombreAvis: 312,
     dureeVisite: 2,
@@ -27,9 +27,7 @@ const SITES = [
     coordonnees: { lat: 6.4667, lng: 2.4167 },
     prix: 5000,
     horaires: "07h00 - 17h00",
-    images: [
-
-    ],
+    images: ["/images/herobg.png"],
     noteMoyenne: 4.7,
     nombreAvis: 489,
     dureeVisite: 3,
@@ -74,7 +72,7 @@ const SITES = [
     coordonnees: { lat: 6.3614, lng: 2.0843 },
     prix: 0,
     horaires: "07h00 - 19h00",
-    images: ["/images/Cathédrale.png"],
+    images: ["/images/Cathedrale.png"],
     noteMoyenne: 4.3,
     nombreAvis: 87,
     dureeVisite: 1,

@@ -8,10 +8,8 @@
  * @module
  */
 
-import type * as itineraires from "../itineraires.js";
 import type * as seed from "../seed.js";
 import type * as sites from "../sites.js";
-import type * as users from "../users.js";
 
 import type {
   ApiFromModules,
@@ -20,10 +18,8 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
-  itineraires: typeof itineraires;
   seed: typeof seed;
   sites: typeof sites;
-  users: typeof users;
 }>;
 
 /**

@@ -22,7 +22,7 @@ export default function AuthGuardModal({ onSuccess, onClose }: Props) {
     setError("");
     const result = await login({ email, password });
     if (!result.success) {
-      setError(result.error);
+      setError(result.error || "Identifiants incorrects.");
     } else {
       onSuccess();
     }

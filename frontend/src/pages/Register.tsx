@@ -67,7 +67,7 @@ export default function RegisterPage() {
       password: form.password,
     });
     if (!result.success) {
-      setError(result.error);
+      setError(result.error || "Une erreur est survenue.");
       return;
     }
     navigate("/", { replace: true });

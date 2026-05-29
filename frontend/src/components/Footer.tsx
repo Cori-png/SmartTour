@@ -41,10 +41,10 @@ export default function Footer() {
           </p>
           {/* Contacts */}
           <div className="flex flex-col gap-2 mt-5">
-            <a href="mailto:contact@smarttour-benin.com"
+            <a href="mailto:aladecorina@gmail.com"
               className="flex items-center gap-2 text-sm text-gray-400 hover:text-green-400 transition-colors">
               <Mail className="w-4 h-4 flex-shrink-0" />
-              contact@smarttour-benin.com
+              aladecorina@gmail.com
             </a>
             <a href="tel:+22901000000"
               className="flex items-center gap-2 text-sm text-gray-400 hover:text-green-400 transition-colors">
